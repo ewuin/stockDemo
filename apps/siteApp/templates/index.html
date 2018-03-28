@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>StockCrawl (Demo)</title>
+    {% load static %}
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+
+  </head>
+  <body>
+    <div id="wrapper" style="width:960px; margin: auto;">
+      <h2>StockCrawl (Demo)</h2>
+      <p>Check out the raw code on my github account: <a href="https://github.com/ewuin/stockCrawl">Ewuin</a></p>
+      <p>This is a facsimile of the website I created as a personal project. It works on my local machine,
+        but in order to launch it on aws, I first need to learn a bit more about launching the scrapy server
+        on somethin like docker or find another solution. In the meantime, this is a collection of images
+        that display the functioning of StockCrawl.
+      </p>
+        <h4>The Landing Page</h4>
+        <p>When a user lands on the site, it first loads a graph of the DOW industrial average index
+          using a call to the API from alphavantage.co. The time interval is 15 minutes, though alphavantage
+          offers other choices.
+        </p>
+
+      <img src="{% static "entry.jpg" %}" alt="landing page" >
+
+      <h4>Interactice Flot Chart</h4>
+      <p>I used the flot library to have the client do the work of taking the data from alphavantage and
+        display it in a chart. The user can click on any point in the chart to see the date and dollar value of the index
+        at any point.
+      </p>
+      <img src="{% static "chart.jpg" %}" alt="clickable chart" style="width:250px;" >
+
+      <h4>StockCrawl</h4>
+      <p>This is the main feature of the website. A user enters a stock name such as "Amazon" or "Exxon Mobil." The server will call on spiders written with scrapy
+          to search for news on that stock from selected financial new sites (so far I have written two spiders for CNBC.com and Bloomberg.com).
+          To assist users in choosing an appropriate search term, I compiled a database from official sources of all stocks on the NYSE and NASDAQ,
+          and then used the django-autocomplete-light package to ensure a valid stock search. It is configured to return suggested search values ordered
+          by a security's market cap.
+         </p>
+
+        <img src="{% static "autocomplete.jpg" %}" alt="autocomplete" >
+
+        <p> When the user clicks submit, it goes to the results page. The crawl function returns the results
+            from the news sites and displays the headlines found, when they were posted, and the results of
+            a sentiment analysis. In order to do the sentiment analysis, I compiled a corpus of words from about 1500
+            articles from CNBC.com dating back to July 2017 (using another scrapy spider) as well as daily stock prices for about 40 stocks.
+            I used scikit-learn to do a multinomial Naive Bayes machine learning algorithm to analyze the relationship
+            between the words in the articles and the fluctuations in stock price on a daily time scale. I pickled the results of
+            the analysis and use that file to perform the sentiment analysis used on the articles scraped by website.
+        </p>
+
+        <img src="{% static "results.jpg" %}" alt="results table example" >
+
+        <p>The page also displays current pricing information for that stock using the alphavantage API</p>
+        <img src="{% static "results2.jpg" %}" alt="individual stock chart" >
+
+      <h4>Custom Text Entry</h4>
+      <p>Back on the landing page, a user can also paste in text and have sentiment analysis performed on it.
+        An AJAX call displays the result without having to reload the page.
+      </p>
+      <img src="{% static "custom.jpg" %}" alt="custom text entry example" >
+
+      <h4>Improvements to be made ...</h4>
+      <p>Many new features could be added to make the website more useful. A user could perhaps prefer to input sectors
+          or specific industries. A user should also be able to see what key words are swaying the sentiment analysis. Certainly more spiders would be a good thing. There should also be some front-end
+          improvements to accomodate the new features and improve user experience. The sentiment analysis model could also
+          use significant improvements. The best way would be to allow users to input their own opinion of an article and then use
+          that in a supervised learning model.
+      </p>
+    </div>
+  </body>
+</html>
